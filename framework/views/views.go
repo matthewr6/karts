@@ -12,7 +12,7 @@ import (
     "io/ioutil"
     "html/template"
     "github.com/fatih/structs"
-    "github.com/imdario/mergo"
+    // "github.com/imdario/mergo"
     "unicode"
 )
 
@@ -35,7 +35,7 @@ func Upper(s string) string {
     return s
 }
 
-func ParamsToMap(params httprouter.Params) map[string]interface{} {
+func UrlParamsToMap(params httprouter.Params) map[string]interface{} {
     parammap := make(map[string]interface{})
     for k := range params {
         param := params[k]
@@ -56,9 +56,10 @@ func (view TemplateView) Render(w http.ResponseWriter, r *http.Request, ps httpr
     t, _ := template.New(view.TemplateName).Parse(file)
     context := make(map[string]interface{})
     requestcontext := structs.Map(r)
-    urlcontext := ParamsToMap(ps)
-    mergo.Merge(&context, requestcontext)
-    mergo.Merge(&context, urlcontext)
+    urlcontext := UrlParamsToMap(ps)
+    context["Request"] = requestcontext
+    context["URL"] = urlcontext
+    fmt.Println(context)
     t.ExecuteTemplate(w, t.Name(), context)
 }
 
@@ -67,9 +68,9 @@ func TemplateRender(name string, w http.ResponseWriter, r *http.Request, ps http
     t, _ := template.New(name).Parse(file)
     context := make(map[string]interface{})
     requestcontext := structs.Map(r)
-    urlcontext := ParamsToMap(ps)
-    mergo.Merge(&context, requestcontext)
-    mergo.Merge(&context, urlcontext)
+    urlcontext := UrlParamsToMap(ps)
+    context["Request"] = requestcontext
+    context["URL"] = urlcontext
     t.ExecuteTemplate(w, t.Name(), context)
 }
 

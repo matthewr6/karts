@@ -6,7 +6,9 @@
             test
         </h1>
         <div>
-            {{ .Param }}
+            {{ .URL.Param }}
+            <br />
+            {{ .Request.RequestURI }}
         </div>
     </body>
 </html>
