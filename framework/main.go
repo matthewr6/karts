@@ -8,7 +8,7 @@ import (
     "github.com/julienschmidt/httprouter"
 
     core "../app"
-    "./views"
+    // "./views"
     "./staticfiles"
 )
 
@@ -23,7 +23,7 @@ func main() {
 
     for k := range core.Routes {
         route := core.Routes[k]
-        router.GET(k, route.(views.View).HandleGet)
+        router.GET(k, route.HandleGet)
         // switch route_type {
 
         //     case "views.TemplateView":
