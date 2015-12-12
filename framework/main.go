@@ -23,19 +23,19 @@ func main() {
 
     for k := range core.Routes {
         route := core.Routes[k]
-        route_type := fmt.Sprintf("%T", route)
-        switch route_type {
+        router.GET(k, route.(views.View).HandleGet)
+        // switch route_type {
 
-            case "views.TemplateView":
-                if core.Routes[k].(views.TemplateView).Get != nil {
-                    router.GET(k, route.(views.TemplateView).Get)
-                } else {
-                    router.GET(k, route.(views.TemplateView).Render)
-                }
+        //     case "views.TemplateView":
+        //         if core.Routes[k].(views.TemplateView).Get != nil {
+        //             router.GET(k, route.(views.TemplateView).Get)
+        //         } else {
+        //             router.GET(k, route.(views.TemplateView).Render)
+        //         }
 
-            default:
-                fmt.Printf("Unrecognized view type \"%s\"", route_type)
-        }
+        //     default:
+        //         fmt.Printf("Unrecognized view type \"%s\"", route_type)
+        // }
     }
 
     log.Fatal(http.ListenAndServe(":3000", router))
