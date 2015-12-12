@@ -12,6 +12,7 @@ import (
     // "io/ioutil"
 
     "../views"
+    "mime"
 )
 
 const StaticDirectories = "/static"
@@ -25,6 +26,9 @@ type Staticfile struct {
 }
 
 func (file Staticfile) Serve(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+    filetype := strings.SplitAfter(file.Realpath, ".")
+    mimetype := mime.TypeByExtension("." + filetype[len(filetype)-1])
+    w.Header().Set("Content-Type", mimetype + ", charset=UTF-8")
     fmt.Fprint(w, GetStaticfile(file.Realpath))
 }
 
