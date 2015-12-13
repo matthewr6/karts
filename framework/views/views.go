@@ -19,21 +19,21 @@ import (
 const TemplateDirectories = "/templates"
 
 type View struct {
-    Get func (w http.ResponseWriter, r *http.Request, ps httprouter.Params)
+    Get func (c *Context)
     GetContext func (map[string]interface{}) map[string]interface{}
 }
 
 // idea... have c Context struct? try that...
 // http://stackoverflow.com/questions/12655464/can-functions-be-passed-as-parameters-in-go
 func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-    context := make(map[string]interface{})
-    context["URL"] = UrlParamsToMap(ps)
-    context["Request"] = structs.Map(r)
+    context := Context{make(map[string]interface{}), w}
+    context.Data["URL"] = UrlParamsToMap(ps)
+    context.Data["Request"] = structs.Map(r)
     if view.GetContext != nil {
-        context = view.GetContext(context)
+        context.Data = view.GetContext(context.Data)
     }
     if view.Get != nil {
-        view.Get(w, r, ps)
+        view.Get(&context)
     }
     // return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
     //     //things
@@ -41,7 +41,8 @@ func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 type Context struct {
-    Context map[string]interface{}
+    Data map[string]interface{}
+    Writer http.ResponseWriter
 }
 
 func Upper(s string) string {
@@ -60,13 +61,13 @@ func UrlParamsToMap(params httprouter.Params) map[string]interface{} {
     return parammap
 }
 
-func TemplateRender(name string, w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+func TemplateRender(name string, c *Context) {
     file := GetTemplate(name)
     t, _ := template.New(name).Parse(file)
-    context := make(map[string]interface{})
-    requestcontext := structs.Map(r)
-    urlcontext := UrlParamsToMap(ps)
-    context["Request"] = requestcontext
-    context["URL"] = urlcontext
-    t.ExecuteTemplate(w, t.Name(), context)
+    // context := make(map[string]interface{})
+    // requestcontext := structs.Map(r)
+    // urlcontext := UrlParamsToMap(ps)
+    // context["Request"] = requestcontext
+    // context["URL"] = urlcontext
+    t.ExecuteTemplate(c.Writer, t.Name(), c.Data)
 }
