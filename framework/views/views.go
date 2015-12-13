@@ -1,18 +1,10 @@
 package views
 
 import (
-    // "fmt"
-    // "log"
     "net/http"
     "github.com/julienschmidt/httprouter"
-
-    // "path/filepath"
-    // "os"
-    // "strings"
-    // "io/ioutil"
     "html/template"
     "github.com/fatih/structs"
-    // "github.com/imdario/mergo"
     "unicode"
 )
 
@@ -21,6 +13,7 @@ const TemplateDirectories = "/templates"
 type View struct {
     TemplateName string
     Get func (c *Context)
+    Post func (c *Context)
     GetContext func (map[string]interface{}) map[string]interface{}
 }
 
@@ -35,6 +28,20 @@ func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter
         view.Get(&context)
     } else if view.TemplateName != "" {
         TemplateRender(view.TemplateName, &context)
+    }
+}
+
+func (view View) HandlePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+    context := Context{make(map[string]interface{}), w}
+    context.Data["URL"] = UrlParamsToMap(ps)
+    context.Data["Request"] = structs.Map(r)
+    if view.GetContext != nil {
+        context.Data = view.GetContext(context.Data)
+    }
+    if view.Post != nil {
+        view.Post(&context)
+    } else {
+        http.Error(w, "Method POST not allowed.", 405)
     }
 }
 

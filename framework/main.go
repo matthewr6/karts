@@ -22,6 +22,7 @@ func main() {
     for k := range core.Routes {
         route := core.Routes[k]
         router.GET(k, route.HandleGet)
+        router.POST(k, route.HandlePost)
     }
 
     log.Fatal(http.ListenAndServe(":3000", router))

@@ -2,18 +2,11 @@ package views
 
 import (
     "fmt"
-    // "log"
-    // "net/http"
-    // "github.com/julienschmidt/httprouter"
 
     "path/filepath"
     "os"
     "strings"
     "io/ioutil"
-    // "html/template"
-    // "github.com/fatih/structs"
-    // "github.com/imdario/mergo"
-    // "unicode"
 )
 
 func GetTemplate(name string) string {

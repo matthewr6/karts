@@ -2,14 +2,12 @@ package staticfiles
 
 import (
     "fmt"
-    // "log"
     "net/http"
     "github.com/julienschmidt/httprouter"
 
     "path/filepath"
     "os"
     "strings"
-    // "io/ioutil"
 
     "../views"
     "mime"
