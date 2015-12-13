@@ -3,12 +3,10 @@ package main
 import (
     "fmt"
     "log"
-    // "strings"
     "net/http"
     "github.com/julienschmidt/httprouter"
 
     core "../app"
-    // "./views"
     "./staticfiles"
 )
 

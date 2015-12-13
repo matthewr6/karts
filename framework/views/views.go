@@ -19,12 +19,11 @@ import (
 const TemplateDirectories = "/templates"
 
 type View struct {
+    TemplateName string
     Get func (c *Context)
     GetContext func (map[string]interface{}) map[string]interface{}
 }
 
-// idea... have c Context struct? try that...
-// http://stackoverflow.com/questions/12655464/can-functions-be-passed-as-parameters-in-go
 func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
     context := Context{make(map[string]interface{}), w}
     context.Data["URL"] = UrlParamsToMap(ps)
@@ -34,10 +33,9 @@ func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter
     }
     if view.Get != nil {
         view.Get(&context)
+    } else if view.TemplateName != "" {
+        TemplateRender(view.TemplateName, &context)
     }
-    // return func(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-    //     //things
-    // }
 }
 
 type Context struct {
@@ -64,10 +62,5 @@ func UrlParamsToMap(params httprouter.Params) map[string]interface{} {
 func TemplateRender(name string, c *Context) {
     file := GetTemplate(name)
     t, _ := template.New(name).Parse(file)
-    // context := make(map[string]interface{})
-    // requestcontext := structs.Map(r)
-    // urlcontext := UrlParamsToMap(ps)
-    // context["Request"] = requestcontext
-    // context["URL"] = urlcontext
     t.ExecuteTemplate(c.Writer, t.Name(), c.Data)
 }
