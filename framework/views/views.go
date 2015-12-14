@@ -13,13 +13,17 @@ const TemplateDirectories = "/templates"
 
 type View struct {
     TemplateName string
+    Form Form
     Get func (c *Context)
     Post func (c *Context)
     GetContext func (map[string]interface{}) map[string]interface{}
 }
 
 func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-    context := Context{make(map[string]interface{}), w}
+    context := Context{
+        Data: make(map[string]interface{}),
+        Writer: w,
+    }
     context.Data["URL"] = UrlParamsToMap(ps)
     context.Data["Request"] = structs.Map(r)
     if view.GetContext != nil {
@@ -36,7 +40,7 @@ func (view View) HandlePost(w http.ResponseWriter, r *http.Request, ps httproute
     r.ParseForm()
     context := Context{
         Data: make(map[string]interface{}),
-        Form: r.Form
+        //Form: Form{r.Form}, // this is the C
         Writer: w,
     }
     context.Data["URL"] = UrlParamsToMap(ps)
@@ -44,16 +48,20 @@ func (view View) HandlePost(w http.ResponseWriter, r *http.Request, ps httproute
     if view.GetContext != nil {
         context.Data = view.GetContext(context.Data)
     }
-    if view.Post != nil {
-        view.Post(&context)
-    } else {
-        http.Error(w, "Method POST not allowed.", 405)
+    var validated bool
+    if &view.Form != nil {
+        validated = view.Form.Validate(r.Form)
     }
+    if view.Post != nil {
+        view.Post(&context, validated)
+        return
+    }
+    http.Error(w, "Method POST not allowed.", 405)
 }
 
 type Context struct {
     Data map[string]interface{}
-    Form map[string]string
+    Form Form
     Writer http.ResponseWriter
 }
 

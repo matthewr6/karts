@@ -8,5 +8,9 @@ var Index = views.View{
     Get: func(c *views.Context) {
         views.TemplateRender("test.html", c)
     },
-    // TemplateName: "test.html",
+    Form: views.Form{
+        Fields: map[string]bool{
+            "inputfield": true,
+        },
+    },
 }
