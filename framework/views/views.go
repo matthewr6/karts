@@ -6,6 +6,7 @@ import (
     "html/template"
     "github.com/fatih/structs"
     "unicode"
+    "fmt"
 )
 
 const TemplateDirectories = "/templates"
@@ -32,7 +33,12 @@ func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter
 }
 
 func (view View) HandlePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-    context := Context{make(map[string]interface{}), w}
+    r.ParseForm()
+    context := Context{
+        Data: make(map[string]interface{}),
+        Form: r.Form
+        Writer: w,
+    }
     context.Data["URL"] = UrlParamsToMap(ps)
     context.Data["Request"] = structs.Map(r)
     if view.GetContext != nil {
@@ -47,6 +53,7 @@ func (view View) HandlePost(w http.ResponseWriter, r *http.Request, ps httproute
 
 type Context struct {
     Data map[string]interface{}
+    Form map[string]string
     Writer http.ResponseWriter
 }
 
