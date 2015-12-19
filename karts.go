@@ -1,4 +1,4 @@
-package main
+package karts
 
 import (
     "fmt"
@@ -6,11 +6,11 @@ import (
     "net/http"
     "github.com/julienschmidt/httprouter"
 
-    core "../app"
-    "./staticfiles"
+    "github.com/firedrake969/karts/staticfiles"
+    "github.com/firedrake969/karts/views"
 )
 
-func main() {
+func RunKarts(routes map[string]views.View) {
     fmt.Println("Starting...")
     router := httprouter.New()
     
@@ -19,8 +19,8 @@ func main() {
         router.GET(staticlist[staticfile].Servedpath, staticlist[staticfile].Serve)
     }
 
-    for k := range core.Routes {
-        route := core.Routes[k]
+    for k := range routes {
+        route := routes[k]
         router.GET(k, route.HandleGet)
         router.POST(k, route.HandlePost)
     }

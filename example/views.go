@@ -1,11 +1,8 @@
-package core
+package main
 
 import (
-    "../framework/views"
-    "fmt"
+    "github.com/firedrake969/karts/views"
 )
-
-var _ = fmt.Println
 
 var Index = views.View{
     Get: func(c *views.Context) {

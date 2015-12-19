@@ -9,7 +9,7 @@ import (
     "os"
     "strings"
 
-    "../views"
+    "github.com/firedrake969/karts/views"
     "mime"
 )
 
