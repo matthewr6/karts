@@ -10,6 +10,9 @@ import (
     "github.com/firedrake969/karts/views"
 )
 
+// This runs everything.  Pass it a mapping of strings (url routes)
+// to views.View structs and it will serve both your views and
+// staticfiles.
 func RunKarts(routes map[string]views.View) {
     fmt.Println("Starting...")
     router := httprouter.New()
