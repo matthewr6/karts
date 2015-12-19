@@ -7,7 +7,10 @@ import (
     "github.com/fatih/structs"
     "unicode"
     "fmt"
+    "net/url"
 )
+
+var _ = fmt.Println
 
 const TemplateDirectories = "/templates"
 
@@ -15,7 +18,7 @@ type View struct {
     TemplateName string
     Form Form
     Get func (c *Context)
-    Post func (c *Context)
+    Post func (c *Context, e []string)
     GetContext func (map[string]interface{}) map[string]interface{}
 }
 
@@ -36,11 +39,14 @@ func (view View) HandleGet(w http.ResponseWriter, r *http.Request, ps httprouter
     }
 }
 
+// flow:
+// check Post func
+// then handleget if no post
 func (view View) HandlePost(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
     r.ParseForm()
     context := Context{
         Data: make(map[string]interface{}),
-        //Form: Form{r.Form}, // this is the C
+        Form: r.Form,
         Writer: w,
     }
     context.Data["URL"] = UrlParamsToMap(ps)
@@ -48,20 +54,20 @@ func (view View) HandlePost(w http.ResponseWriter, r *http.Request, ps httproute
     if view.GetContext != nil {
         context.Data = view.GetContext(context.Data)
     }
-    var validated bool
+    var errors []string
     if &view.Form != nil {
-        validated = view.Form.Validate(r.Form)
+        errors = view.Form.HandleValidate(r.Form)
     }
     if view.Post != nil {
-        view.Post(&context, validated)
-        return
+        view.Post(&context, errors)
+    } else {
+        view.HandleGet(w, r, ps) // default - NOT RECOMMENDED
     }
-    http.Error(w, "Method POST not allowed.", 405)
 }
 
 type Context struct {
     Data map[string]interface{}
-    Form Form
+    Form url.Values
     Writer http.ResponseWriter
 }
 
