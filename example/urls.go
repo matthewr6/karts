@@ -1,11 +1,9 @@
-package core
+package main
 
 import (
-    "../framework/views"
-    "fmt"
+    "github.com/firedrake969/karts"
+    "github.com/firedrake969/karts/views"
 )
-
-var _ = fmt.Println
 
 var Index = views.View{
     Get: func(c *views.Context) {
@@ -24,4 +22,13 @@ var Index = views.View{
         },
         SuccessUrl: "/test/someurl",
     },
+}
+
+var Routes = map[string]views.View {
+    "/": Index,
+    "/test/:param": Index,
+}
+
+func main() {
+    karts.RunKarts(Routes)
 }
