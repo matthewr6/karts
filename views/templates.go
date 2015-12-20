@@ -14,8 +14,8 @@ func GetTemplate(name string) string {
 }
 
 func GetTemplatePath(templatename string) string {
+    searchdir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
     var matchedpath string
-    searchdir := "../app"
     filepath.Walk(searchdir, func(fp string, fi os.FileInfo, err error) error {
         if err != nil {
             fmt.Println(err) // can't walk here,
