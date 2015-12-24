@@ -11,5 +11,5 @@ var Routes = map[string]views.View {
 }
 
 func main() {
-    karts.RunKarts(Routes, 3000)
+    karts.RunKarts(Routes)
 }
