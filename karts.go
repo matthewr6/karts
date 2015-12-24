@@ -3,6 +3,7 @@ package karts
 import (
     "fmt"
     "log"
+    "strconv"
     "net/http"
     "github.com/julienschmidt/httprouter"
 
@@ -13,7 +14,7 @@ import (
 // This runs everything.  Pass it a mapping of strings (url routes)
 // to views.View structs and it will serve both your views and
 // staticfiles.
-func RunKarts(routes map[string]views.View) {
+func RunKarts(routes map[string]views.View, port int) {
     fmt.Println("Starting...")
     router := httprouter.New()
     
@@ -28,5 +29,5 @@ func RunKarts(routes map[string]views.View) {
         router.POST(k, route.HandlePost)
     }
 
-    log.Fatal(http.ListenAndServe(":3000", router))
+    log.Fatal(http.ListenAndServe(":" + strconv.Itoa(port), router))
 }
