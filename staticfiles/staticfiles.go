@@ -35,7 +35,7 @@ func GetStaticfile(path string) string {
 }
 
 func GetStaticfiles() []Staticfile {
-    searchdir := "../app"
+    searchdir, _ := filepath.Abs(filepath.Dir(os.Args[0]))
     staticfiles := []string{}
     staticstructs := []Staticfile{}
     filepath.Walk(searchdir, func(fp string, fi os.FileInfo, err error) error {
